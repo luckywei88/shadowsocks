@@ -1,0 +1,27 @@
+#!/bin/bash
+
+pushdir=(
+	/home/lucky/MyLib/darknet
+	/home/lucky/MyLib/DBoW2
+	/home/lucky/MyLib/g2o
+	/home/lucky/MyLib/octomap
+	/home/lucky/MyLib/shadowsocks
+	/home/lucky/workspace/src/humanoid
+	/home/lucky/workspace/src/octomap
+	/home/lucky/workspace/src/orb_slam
+)
+
+git_push()
+{
+	cd $1
+	git add -A
+	git commit -m "i"
+	git push -u origin master
+}
+
+
+for dir in ${pushdir[@]}
+do
+	echo $dir
+	git_push $dir
+done
