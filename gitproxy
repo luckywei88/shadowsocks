@@ -1,0 +1,35 @@
+#!/bin/bash
+
+git_proxy()
+{
+	if [ ! -f ~/.ssh/config ]; then
+		cat > ~/.ssh/config<<-EOF
+Host github.com
+ProxyCommand nc -X 5 -x 127.0.0.1:1080 %h %p
+EOF
+	fi
+
+	git config --global http.proxy socks5://127.0.0.1:1080
+	git config --global https.proxy socks5://127.0.0.1:1080
+}
+
+git_cancel_proxy()
+{
+	if [ -f ~/.ssh/config ]; then
+		rm ~/.ssh/config
+	fi
+	git config --global --unset http.proxy
+	git config --global --unset https.proxy
+}
+
+case $1 in
+	proxy)
+	git_proxy
+	;;
+	cancel)
+	git_cancel_proxy
+	;;
+	*)
+	echo "usage $0 proxy cancel"
+	;;
+esac
