@@ -12,6 +12,7 @@ giturls=(
 	git@github.com:luckywei88/MY_G2O.git
 	git@github.com:luckywei88/MY_OCTOMAP.git
 	git@github.com:luckywei88/shadowsocks.git
+	git@github.com:luckywei88/Origin_Octomap.git
 	git@github.com:luckywei88/MY_LAUNCH.git
 	git@github.com:luckywei88/MY_SHELL.git
 	git@github.com:luckywei88/MY_HUMANOID.git	
@@ -25,6 +26,7 @@ names=(
 	g2o
 	octomap
 	shadowsocks
+	octomap
 	launch
 	shell
 	humanoid
@@ -56,25 +58,25 @@ get_http_name()
 
 ros_install()
 {
-	sudo apt-get update
-	sudo apt-get install libglew-dev
-	sudo apt-get install git
+	sudo tsocks apt-get update
+	sudo tsocks apt-get install libglew-dev
+	sudo tsocks apt-get install git
 	git config --global user.name "lucky88"
 	git config --global user.email "1010442593@qq.com"	
 
 	sudo sh -c 'echo "deb http://packages.ros.org/ros/ubuntu $(lsb_release -sc) main" > /etc/apt/sources.list.d/ros-latest.list'
-	sudo apt-key adv --keyserver hkp://ha.pool.sks-keyservers.net:80 --recv-key 421C365BD9FF1F717815A3895523BAEEB01FA116
-	sudo apt-get update
+	sudo tsocks apt-key adv --keyserver hkp://ha.pool.sks-keyservers.net:80 --recv-key 421C365BD9FF1F717815A3895523BAEEB01FA116
+	sudo tsocks apt-get update
 
-	sudo apt-get install ros-indigo-desktop-full
-	sudo apt-get install ros-indigo-map-server
-	sudo apt-get install ros-indigo-sbpl
+	sudo tsocks apt-get install ros-indigo-desktop-full
+	sudo tsocks apt-get install ros-indigo-map-server
+	sudo tsocks apt-get install ros-indigo-sbpl
 }
 
 git_download()
 {
 	if [ ! -d $3 ]; then
-		git clone $1
+		tsocks git clone $1
 		mv $2 $3
 		cd $3
 		git init
@@ -154,8 +156,8 @@ install()
 			make_install $name 
 		else 
 			cd_MyDir $Origin
-			building $name
 			git_download $url $name $name 
+			building $name
 		fi
 	done
 	
@@ -169,7 +171,11 @@ install()
 			cd_MyDir $Lib
 			git_download $url $first $name
 			building $name
-		elif [ $i -le 6 ]; then
+		elif [ $i -eq 5 ];then
+			cd_MyDir $Origin
+			git_download $url $first $name
+			building $name
+		elif [ $i -le 7 ]; then
 			cd_MyDir $work
 			git_download $url $first $name
 		else

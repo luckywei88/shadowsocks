@@ -34,8 +34,9 @@ get_ipv6(){
 
 pre_install()
 {
-    apt-get install update
-    ipv6=get_ipv6
+    apt-get update
+    apt-get install tsocks
+    cp tsocks.conf /etc/
 }
 
 install_shadowsocks()
@@ -48,6 +49,9 @@ install_shadowsocks()
 
 config_shadowsocks()
 {
+    if get_ipv6; then
+	ipv6=1
+    fi
     if [ ! -d /etc/shadowsocks ]; then
         mkdir -p /etc/shadowsocks
     fi
@@ -64,34 +68,34 @@ config_shadowsocks()
 
     read -p "enter your ciphers" num
 
-    chiper=${ciphers[$num-1]}
+    cipher=${ciphers[$num-1]}
 
     
     cat > /etc/shadowsocks/config_ipv4.json<<-EOF
-    {
-        "server":${server},
+{
+	"server":${server},
         "server_port":${port},
         "local_address":"127.0.0.1",
         "local_port":1080,
         "password":"${password}",
         "timeout":600,
         "method":"${cipher}"
-    }
-    EOF
+}
+EOF
     
-    if [ ipv6 -eq 1]; then
+    if [ $ipv6 -eq 1 ]; then
             read -p "enter your ipv6 server" ipv6_server
             cat > /etc/shadowsocks/config_ipv4.json<<-EOF
-            {
-                "server":${server},
-                "server_port":${port},
-                "local_address":"127.0.0.1",
-                "local_port":1080,
-                "password":"${password}",
-                "timeout":600,
-                "method":"${cipher}"
-            }
-            EOF
+{
+	"server":${ipv6_server},
+        "server_port":${port},
+        "local_address":"127.0.0.1",
+        "local_port":1080,
+        "password":"${password}",
+        "timeout":600,
+        "method":"${cipher}"
+}
+EOF
     fi    
 
 }
@@ -101,7 +105,7 @@ firewall_set()
     apt-get install iptables-persistent
     iptables -I INPUT -m state --state NEW -m tcp -p tcp --dport ${port} -j ACCEPT
     iptables -I INPUT -m state --state NEW -m udp -p udp --dport ${port} -j ACCEPT
-    if [ ipv6 -eq 1 ]; then
+    if [ $ipv6 -eq 1 ]; then
         ip6tables -I INPUT -m state --state NEW -m tcp -p tcp --dport ${port} -j ACCEPT
         ip6tables -I INPUT -m state --state NEW -m udp -p udp --dport ${port} -j ACCEPT
     fi
@@ -133,4 +137,4 @@ install()
     add_serice
 }
 
-install
+install 2>&1 | tee $0.log

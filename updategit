@@ -6,6 +6,7 @@ pushdir=(
 	/home/lucky/MyLib/g2o
 	/home/lucky/MyLib/octomap
 	/home/lucky/MyLib/shadowsocks
+	/home/lucky/MyLib/OriginLib/octomap
 	/home/lucky/workspace/src/humanoid
 	/home/lucky/workspace/src/octomap
 	/home/lucky/workspace/src/orb_slam
@@ -15,8 +16,8 @@ git_push()
 {
 	cd $1
 	git add -A
-	git commit -m "i"
-	git push -u origin master
+	git commit -m "upload"
+	tsocks git push -u origin master
 }
 
 
