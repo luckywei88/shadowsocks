@@ -126,6 +126,9 @@ add_service()
     cp shadowsocks /etc/init.d/
     update-rc.d shadowsocks defaults
     service shadowsocks start
+
+    #set dns ipv4 first
+    echo "precedence ::ffff:0:0/96 100" >> /etc/gai.conf
 }
 
 install()
