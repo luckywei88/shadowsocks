@@ -33,8 +33,12 @@ required_luci=
 download()
 {
 	git clone https://github.com/openwrt/openwrt.git
-	git clone https://github.com/openwrt/luci.git
-	git clone https://https://github.com/openwrt/packages.git
+	pushd openwrt
+	tsocks ./scripts/feeds update -a
+	tsocks ./scripts/feeds install -a
+	tsocks ./scripts/update luci
+	tsocks ./scripts/install luci
+	popd
 	pushd $out_net
 	git clone https://github.com/aa65535/openwrt-chinadns.git
 	git clone https://github.com/aa65535/openwrt-dns-forwarder.git
