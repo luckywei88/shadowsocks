@@ -37,7 +37,17 @@ names=(
 httpurls=(
 	https://github.com/stevenlovegrove/Pangolin
 	https://github.com/raulmur/ORB_SLAM2
-	https://github.com/OctoMap/octomap	
+	https://github.com/OctoMap/octomap
+	https://github.com/felixendres/rgbdslam_v2	
+)
+
+app=(
+	git
+	libglew-dev
+	libsuitesparse-dev
+	ros-indigo-desktop-full
+	ros-indigo-map-server
+	ros-indigo-sbpl
 )
 
 get_git_name()
@@ -58,19 +68,18 @@ get_http_name()
 
 ros_install()
 {
-	sudo tsocks apt-get update
-	sudo tsocks apt-get install libglew-dev
-	sudo tsocks apt-get install git
-	git config --global user.name "lucky88"
-	git config --global user.email "1010442593@qq.com"	
-
 	sudo sh -c 'echo "deb http://packages.ros.org/ros/ubuntu $(lsb_release -sc) main" > /etc/apt/sources.list.d/ros-latest.list'
 	sudo tsocks apt-key adv --keyserver hkp://ha.pool.sks-keyservers.net:80 --recv-key 421C365BD9FF1F717815A3895523BAEEB01FA116
 	sudo tsocks apt-get update
 
-	sudo tsocks apt-get install ros-indigo-desktop-full
-	sudo tsocks apt-get install ros-indigo-map-server
-	sudo tsocks apt-get install ros-indigo-sbpl
+	app_list=""
+	for i in ${app[@]}
+	do
+		app_list=${app_list}" "$i
+	done
+	sudo tsocks apt-get install $app_list
+	git config --global user.name "lucky88"
+	git config --global user.email "1010442593@qq.com"	
 }
 
 git_download()
@@ -99,9 +108,9 @@ cmaking()
 
 making()
 {
-    cd $1
+    pushd $1
     make -j
-    cd ../
+    popd ../
 }
 
 
