@@ -44,7 +44,8 @@ httpurls=(
 app=(
 	git
 	libglew-dev
-	libsuitesparse-dev
+	freeglut3-dev
+	libopencv-nonfree-dev
 	ros-indigo-desktop-full
 	ros-indigo-map-server
 	ros-indigo-sbpl
@@ -70,6 +71,7 @@ ros_install()
 {
 	sudo sh -c 'echo "deb http://packages.ros.org/ros/ubuntu $(lsb_release -sc) main" > /etc/apt/sources.list.d/ros-latest.list'
 	sudo tsocks apt-key adv --keyserver hkp://ha.pool.sks-keyservers.net:80 --recv-key 421C365BD9FF1F717815A3895523BAEEB01FA116
+	sudo add-apt-repository --yes ppa:xqms/opencv-nonfree
 	sudo tsocks apt-get update
 
 	app_list=""
