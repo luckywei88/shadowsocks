@@ -18,7 +18,8 @@ app=(
 	xsltproc 
 	wget
 	libglew-dev
-	curl	
+	curl
+	gcp	
 )
 
 app_list=""
