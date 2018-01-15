@@ -10,6 +10,7 @@ pushdir=(
 	/home/lucky/workspace/src/humanoid
 	/home/lucky/workspace/src/octomap
 	/home/lucky/workspace/src/orb_slam
+	/home/lucky/workspace/src/dataset
 )
 
 git_push()
@@ -23,6 +24,5 @@ git_push()
 
 for dir in ${pushdir[@]}
 do
-	echo $dir
 	git_push $dir
 done
