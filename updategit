@@ -11,6 +11,8 @@ pushdir=(
 	/home/lucky/workspace/src/octomap
 	/home/lucky/workspace/src/orb_slam
 	/home/lucky/workspace/src/dataset
+	/home/lucky/workspace/launch
+	/home/lucky/workspace/shell
 )
 
 git_push()
