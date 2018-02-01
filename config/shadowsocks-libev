@@ -1,0 +1,68 @@
+
+config ss_local
+	option server 'sss0'
+	option local_address '0.0.0.0'
+	option local_port '1080'
+	option timeout '30'
+	option mode 'tcp_and_udp'
+	option disabled 'true'
+
+config ss_tunnel
+	option server 'sss0'
+	option local_address '0.0.0.0'
+	option local_port '1090'
+	option tunnel_address 'example.com:80'
+	option mode 'tcp_and_udp'
+	option timeout '60'
+	option disabled 'true'
+
+config ss_redir 'hi'
+	option local_address '0.0.0.0'
+	option mode 'tcp_and_udp'
+	option timeout '60'
+	option verbose '1'
+	option local_port '1080'
+	option server 'sss0'
+
+config ss_redir 'hj'
+	option disabled '1'
+	option server 'sss0'
+	option local_address '0.0.0.0'
+	option local_port '1100'
+	option mode 'tcp_and_udp'
+	option timeout '60'
+	option fast_open '1'
+	option verbose '1'
+	option reuse_port '1'
+
+config ss_rules 'ss_rules'
+	option disabled '1'
+	option redir_tcp 'hi'
+	option redir_udp 'hi'
+	option src_default 'checkdst'
+	option dst_default 'bypass'
+	option local_default 'checkdst'
+	list src_ips_forward '192.168.1.4'
+	list dst_ips_forward '8.8.8.8'
+
+config server 'sss0'
+	option server '45.63.61.11'
+	option server_port '8989'
+	option method 'aes-256-gcm'
+	option password 'lucky8981194'
+
+config ss_server
+	option server_port '9001'
+	option mode 'tcp_and_udp'
+	option method 'aes-128-gcm'
+	option password 'lucky8981194'
+	option server '0.0.0.0'
+	option bind_address '127.0.0.1'
+	option disabled 'true'
+
+config server 'sss1'
+	option server '2001:19f0:6001:de4:5400:01ff:fe50:0653'
+	option server_port '8989'
+	option method 'aes-256-gcm'
+	option password 'lucky8981194'
+
