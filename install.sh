@@ -23,7 +23,8 @@ salsa20
 rc4-md5
 )
 
-get_ipv6(){
+get_ipv6()
+{
         local ipv6=$(wget -qO- -t1 -T2 ipv6.icanhazip.com)
         if [ -z ${ipv6} ]; then
             return 1
@@ -32,10 +33,26 @@ get_ipv6(){
         fi
 }
 
+add_rclocal()
+{
+	cat /etc/rc.local | while read line
+	do
+		if [ "x$line" != "xexit 0" ] ; then
+			echo $line >> tmp
+		else
+			echo "hev-dns-forwarder" >> tmp
+			echo "exit 0" >> tmp
+		fi
+	done
+	cp tmp /etc/rc.local
+}
+
 pre_install()
 {
     apt-get update
-    apt-get install dnsmasq
+    apt-get install iptables-persistent
+    wget https://raw.githubusercontent.com/luckywei88/shadowsocks/master/shadowsocks
+
     git clone git://github.com/heiher/hev-dns-forwarder
     pushd hev-dns-forwarder
     make
@@ -51,6 +68,8 @@ install_shadowsocks()
     add-apt-repository ppa:max-c-lv/shadowsocks-libev -y
     apt-get update
     apt install shadowsocks-libev
+    
+    apt-get install dnsmasq
 }
 
 config_shadowsocks()
@@ -118,7 +137,6 @@ EOF
 
 firewall_set()
 {
-    apt-get install iptables-persistent
     iptables -I INPUT -m state --state NEW -m tcp -p tcp --dport ${port} -j ACCEPT
     iptables -I INPUT -m state --state NEW -m udp -p udp --dport ${port} -j ACCEPT
     if [ $ipv6 -eq 1 ]; then
@@ -141,12 +159,15 @@ add_service()
 
     #build new
     chmod +x shadowsocks
-    cp shadowsocks /etc/init.d/
+    mv shadowsocks /etc/init.d/
     update-rc.d shadowsocks defaults
     service shadowsocks start
 
     #set dns ipv4 first
     echo "precedence ::ffff:0:0/96 100" >> /etc/gai.conf
+
+    #modify dns server
+    echo "server=127.0.0.1#5300" >> /etc/dnsmasq.conf  
 }
 
 install()
@@ -155,7 +176,8 @@ install()
     config_shadowsocks
     firewall_set
     install_shadowsocks
-    add_serice
+    add_service
+    add_rclocal
 }
 
 install 2>&1 | tee $0.log
