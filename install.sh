@@ -35,8 +35,14 @@ get_ipv6(){
 pre_install()
 {
     apt-get update
-    apt-get install tsocks
-    cp tsocks.conf /etc/
+    apt-get install dnsmasq
+    git clone git://github.com/heiher/hev-dns-forwarder
+    pushd hev-dns-forwarder
+    make
+    pushd src
+    cp hev-dns-forwarder /usr/sbin
+    popd
+    popd
 }
 
 install_shadowsocks()
@@ -79,13 +85,18 @@ config_shadowsocks()
         "local_port":1080,
         "password":"${password}",
         "timeout":600,
+	"fast_open": false,
+	"use_syslog": false,
+	"ipv6_first": false,
+	"reuse_port": false,
+	"disable_sni": false,
         "method":"${cipher}"
 }
 EOF
     
     if [ $ipv6 -eq 1 ]; then
             read -p "enter your ipv6 server" ipv6_server
-            cat > /etc/shadowsocks/config_ipv4.json<<-EOF
+            cat > /etc/shadowsocks/config_ipv6.json<<-EOF
 {
 	"server":${ipv6_server},
         "server_port":${port},
@@ -93,6 +104,11 @@ EOF
         "local_port":1080,
         "password":"${password}",
         "timeout":600,
+	"fast_open": false,
+	"use_syslog": false,
+	"ipv6_first": false,
+	"reuse_port": false,
+	"disable_sni": false,
         "method":"${cipher}"
 }
 EOF
@@ -110,6 +126,7 @@ firewall_set()
         ip6tables -I INPUT -m state --state NEW -m udp -p udp --dport ${port} -j ACCEPT
     fi
 
+    iptables -t nat -A OUTPUT -p tcp -j REDIRECT --to-ports 1080
     service iptables-persistent save
     service iptables-persistent restart
 }
@@ -117,6 +134,7 @@ firewall_set()
 add_service()
 {
     #remove old
+    service shadowsocks-libev stop
     update-rc.d -f shadowsocks-libev remove
     rm /etc/init.d/shadowsocks-libev
     rm -rf /var/run/shadowsocks-libev

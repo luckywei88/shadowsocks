@@ -14,9 +14,9 @@
 
 # Author: Teddysun <i@teddysun.com>
 if [ -f /usr/local/bin/ss-local ]; then
-    DAEMON=/usr/local/bin/ss-local
+    DAEMON=/usr/local/bin/ss-redir
 elif [ -f /usr/bin/ss-local ]; then
-    DAEMON=/usr/bin/ss-local
+    DAEMON=/usr/bin/ss-redir
 fi
 NAME=Shadowsocks
 CONF4=/etc/shadowsocks/config_ipv4.json

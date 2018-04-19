@@ -20,7 +20,7 @@ git_push()
 	cd $1
 	git add -A
 	git commit -m "upload"
-	tsocks git push -u origin master
+	git push -u origin master
 }
 
 
