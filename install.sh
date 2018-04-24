@@ -144,6 +144,7 @@ firewall_set()
         ip6tables -I INPUT -m state --state NEW -m udp -p udp --dport ${port} -j ACCEPT
     fi
 
+    iptables -t nat -A OUTPUT -d 10.0.0.0/8 -j RETURN
     iptables -t nat -A OUTPUT -p tcp -j REDIRECT --to-ports 1080
     service iptables-persistent save
     service iptables-persistent restart
