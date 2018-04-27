@@ -33,20 +33,6 @@ get_ipv6()
         fi
 }
 
-add_rclocal()
-{
-	cat /etc/rc.local | while read line
-	do
-		if [ "x$line" != "xexit 0" ] ; then
-			echo $line >> tmp
-		else
-			echo "hev-dns-forwarder" >> tmp
-			echo "exit 0" >> tmp
-		fi
-	done
-	cp tmp /etc/rc.local
-}
-
 pre_install()
 {
     apt-get update
@@ -151,6 +137,8 @@ firewall_set()
     iptables -t nat -A OUTPUT -p tcp -j REDIRECT --to-ports 1080
     service iptables-persistent save
     service iptables-persistent restart
+#    service netfilter-persistent save
+#   service netfilter-persistent restart
 }
 
 add_service()
@@ -167,6 +155,11 @@ add_service()
     update-rc.d shadowsocks defaults
     service shadowsocks start
 
+    chmod +x dns-forwarder
+    mv dns-forwarder /etc/init.d/
+    update-rc.d dns-forwarder defaults
+    service dns-forwarder start
+
     #set dns ipv4 first
     echo "precedence ::ffff:0:0/96 100" >> /etc/gai.conf
 
@@ -181,7 +174,6 @@ install()
     firewall_set
     install_shadowsocks
     add_service
-    add_rclocal
 }
 
 install 2>&1 | tee $0.log

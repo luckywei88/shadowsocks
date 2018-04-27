@@ -1,0 +1,46 @@
+#!/usr/bin/env bash
+
+check_running()
+{
+	line=$(ps -e | grep hev-dns-forward | wc -l)
+	if [ $line -eq 0 ]; then
+		return 1
+	else
+		return 0
+	fi
+}
+
+do_start()
+{
+	if check_running; then
+		echo "running...."
+	else
+		/usr/sbin/hev-dns-forwarder &
+	fi
+}
+
+do_stop()
+{
+	if check_running; then
+		pid=$(ps -e | grep hev-dns-forward | /usr/bin/awk '{print $1}')
+		kill $pid
+	fi
+}
+
+do_restart()
+{
+	do_stop
+	do_start
+}
+
+case "$1" in
+	start|stop|restart)
+	do_$1
+	;;
+	*)
+	echo "Usage: $0 { start | stop | restart }"
+	RET_VAL=1
+	;;
+esac
+
+exit $RET_VAL
