@@ -37,9 +37,11 @@ pre_install()
 {
     apt-get update
     apt-get install iptables-persistent
-    wget https://raw.githubusercontent.com/luckywei88/shadowsocks/master/shadowsocks
+    wget https://raw.githubusercontent.com/luckywei88/shadowsocks/master/shadowsocks --no-check-certificate
+    wget https://raw.githubusercontent.com/luckywei88/shadowsocks/master/dns-forwarder --no-check-certificate
+    wget https://github.com/shadowsocks/shadowsocks-libev/releases/download/v3.1.1/shadowsocks-libev-3.1.1.tar.gz --no-check-certificate
 
-    git clone git://github.com/heiher/hev-dns-forwarder
+    git clone https://github.com/aa65535/hev-dns-forwarder
     pushd hev-dns-forwarder
     make
     pushd src
@@ -53,9 +55,16 @@ install_shadowsocks()
     apt-get install software-properties-common -y --force-yes
     add-apt-repository ppa:max-c-lv/shadowsocks-libev -y
     apt-get update
-    apt install shadowsocks-libev
-    
+    apt-get install libc-ares-dev
+    apt-get install libev-dev
+    apt-get install shadowsocks-libev
     apt-get install dnsmasq
+
+    tar -zxvf shadowsocks-libev-3.1.1.tar.gz
+    pushd shadowsocks-libev-3.1.1
+    ./configure
+    make
+    popd
 }
 
 config_shadowsocks()
@@ -164,13 +173,23 @@ add_service()
     echo "precedence ::ffff:0:0/96 100" >> /etc/gai.conf
 
     #modify dns server
-    echo "server=127.0.0.1#5300" >> /etc/dnsmasq.conf  
+    echo "server=127.0.0.1#5300" >> /etc/dnsmasq.conf 
+    
+    zerotier-cli join 9f77fc393e18270a 
+}
+
+install_zerotier()
+{
+	curl -s 'https://pgp.mit.edu/pks/lookup?op=get&search=0x1657198823E52A61' | gpg --import && \
+if z=$(curl -s 'https://install.zerotier.com/' | gpg); then echo "$z" | sudo bash; fi
+	curl -s https://install.zerotier.com/ | sudo bash
 }
 
 install()
 {
     pre_install
     config_shadowsocks
+    install_zerotier
     firewall_set
     install_shadowsocks
     add_service
